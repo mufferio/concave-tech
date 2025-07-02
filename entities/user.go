@@ -8,4 +8,6 @@ type User struct {
 	Lastname    string
 	DateOfBirth time.Time
 	Income      float64
+	Credential  Credential
+	Profile     Profile
 }

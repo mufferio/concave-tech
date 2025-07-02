@@ -16,18 +16,18 @@ func NewUserService(r repositories.UserRepository) UserService {
 }
 
 func (s *userService) GetUsers() ([]dtos.UserDTO, error) {
-	entities, err := s.repo.FindAll()
+	users, err := s.repo.FindAll()
 	if err != nil {
 		return nil, err
 	}
-	dtosOut := make([]dtos.UserDTO, len(entities))
-	for i, e := range entities {
-		dtosOut[i] = dtos.UserDTO{
-			Firstname:   e.Firstname,
-			Lastname:    e.Lastname,
-			DateOfBirth: e.DateOfBirth.Format("02-Jan-2006"),
-			Income:      e.Income,
+	out := make([]dtos.UserDTO, len(users))
+	for i, u := range users {
+		out[i] = dtos.UserDTO{
+			Firstname:   u.Firstname,
+			Lastname:    u.Lastname,
+			DateOfBirth: u.DateOfBirth.Format("02-Jan-2006"),
+			Income:      u.Income,
 		}
 	}
-	return dtosOut, nil
+	return out, nil
 }

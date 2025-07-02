@@ -36,3 +36,27 @@ func (r *userRepo) FindAll() ([]entities.User, error) {
 	}
 	return users, rows.Err()
 }
+
+func (r *userRepo) FindByUsername(username string) (*entities.User, error) {
+	const q = `
+	  SELECT
+	    c.id, c.username, c.password_hash, c.created_at,
+	    p.id, p.first_name, p.last_name, p.date_of_birth, p.income
+	  FROM credential c
+	  JOIN profile   p ON p.credential_id = c.id
+	  WHERE c.username = $1
+	`
+
+	var u entities.User
+	err := r.db.QueryRow(q, username).Scan(
+		&u.Credential.ID, &u.Credential.Username, &u.Credential.PasswordHash, &u.Credential.CreatedAt,
+		&u.Profile.ID, &u.Profile.FirstName, &u.Profile.LastName, &u.Profile.DateOfBirth, &u.Profile.Income,
+	)
+	if err == sql.ErrNoRows {
+		return nil, nil // not found
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}

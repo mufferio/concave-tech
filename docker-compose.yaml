@@ -2,25 +2,33 @@ version: "3.9"
 
 services:
   postgres:
-    image: "postgres:latest"
+    image: postgres:latest
+    container_name: postgres
     environment:
-      - "POSTGRES_DB=mydatabase"
-      - "POSTGRES_PASSWORD=123"
-      - "POSTGRES_USER=user"
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
     ports:
       - "5432:5432"
+    volumes:
+      # 👇 THESE TWO LINES make Postgres run your scripts once
+      - ./create.sql:/docker-entrypoint-initdb.d/00_create.sql:ro
+      - ./data.sql:/docker-entrypoint-initdb.d/01_data.sql:ro
+      # optional named volume for data persistence
+      - pgdata:/var/lib/postgresql/data
+
   pgadmin:
-    image: "dpage/pgadmin4:latest"
+    image: dpage/pgadmin4:latest
     container_name: pgadmin4_container
     restart: always
-    ports:
-      - "8858:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: user@a.com
       PGADMIN_DEFAULT_PASSWORD: 321
+    ports:
+      - "8858:80"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-      - ./create.sql:/docker-entrypoint-initdb.d/00_create.sql:ro
-      - ./data.sql:/docker-entrypoint-initdb.d/01_data.sql:ro
+
 volumes:
+  pgdata:
   pgadmin-data:
